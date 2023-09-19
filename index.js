@@ -123,12 +123,13 @@ app.get('/storeData', async (req, res) => {
   
       // Insert data into the PostgreSQL database
       const insertQuery = `
-        INSERT INTO sensor_data (
-          temperature, humidity, pressure, altitude, gas, lux,
-          ultraviolet, pm1, pm25, pm10, battery, sound, timestamp
-        )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
-      `;
+  INSERT INTO sensor_data (
+    temperature, humidity, pressure, altitude, gas, lux,
+    ultraviolet, pm1, pm2_5, pm10, battery_level, sound, timestamp
+  )
+  VALUES ($1::NUMERIC, $2::NUMERIC, $3::NUMERIC, $4::NUMERIC, $5::NUMERIC, $6::NUMERIC,
+          $7::NUMERIC, $8::NUMERIC, $9::NUMERIC, $10::NUMERIC, $11::NUMERIC, $12::NUMERIC, $13::NUMERIC)
+`;
       const values = [
         temperature,
         humidity,
