@@ -163,6 +163,11 @@ app.get('/storeData', async (req, res) => {
 
 
 // Handle GET request to retrieve all sensor data
+
+app.get('/',async (req,res) => {
+    res.status(200).json({ message: 'Connect OK' });
+})
+
 app.get('/getAllSensorData', async (req, res) => {
   try {
     const selectQuery = 'SELECT * FROM sensor_data';
