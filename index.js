@@ -108,7 +108,7 @@ app.delete('/clearData', async (req, res) => {
   // Handle GET request to retrieve the latest sensor data
 app.get('/getLatestSensorData', async (req, res) => {
     try {
-      const selectLatestQuery = 'SELECT * FROM sensor_data ORDER BY timestamp DESC LIMIT 1';
+      const selectLatestQuery = 'SELECT * FROM sensor_data ORDER BY timestamp ASC LIMIT 1';
       const { rows } = await pool.query(selectLatestQuery);
       res.status(200).json(rows[0] || {}); // Return the latest data or an empty object
     } catch (error) {
