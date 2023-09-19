@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const { Pool } = require('pg');
 
 const app = express();
-const port = 3880; // You can change the port as needed
+const port = 3881; // You can change the port as needed
 
 // Create a connection pool for PostgreSQL using the environment variable
 const pool = new Pool({
@@ -51,36 +51,116 @@ async function createTableIfNotExists() {
 createTableIfNotExists();
 
 // Handle POST requests to store JSON data in the database
-app.post('/storeData', async (req, res) => {
-  try {
-    const data = req.body;
-    const insertQuery = `
-      INSERT INTO sensor_data (pm1, pm2_5, pm10, temperature, pressure, humidity, gas, altitude, lux, sound, ultraviolet, battery_level, timestamp)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
-    `;
-    const values = [
-      data.PM1,
-      data.PM2_5,
-      data.PM10,
-      data.Temperature,
-      data.Pressure,
-      data.Humidity,
-      data.Gas,
-      data.Altitude,
-      data.Lux,
-      data.Sound,
-      data.Ultraviolet,
-      data.Batterylevel,
-      data.timestamp,
-    ];
+// app.post('/storeData', async (req, res) => {
+//   try {
+//     const data = req.body;
+//     const insertQuery = `
+//       INSERT INTO sensor_data (pm1, pm2_5, pm10, temperature, pressure, humidity, gas, altitude, lux, sound, ultraviolet, battery_level, timestamp)
+//       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+//     `;
+//     const values = [
+//       data.PM1,
+//       data.PM2_5,
+//       data.PM10,
+//       data.Temperature,
+//       data.Pressure,
+//       data.Humidity,
+//       data.Gas,
+//       data.Altitude,
+//       data.Lux,
+//       data.Sound,
+//       data.Ultraviolet,
+//       data.Batterylevel,
+//       data.timestamp,
+//     ];
 
-    await pool.query(insertQuery, values);
-    res.status(200).json({ message: 'Data stored successfully' });
-  } catch (error) {
-    console.error('Error storing data:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
+//     await pool.query(insertQuery, values);
+//     res.status(200).json({ message: 'Data stored successfully' });
+//   } catch (error) {
+//     console.error('Error storing data:', error);
+//     res.status(500).json({ error: 'Internal Server Error' });
+//   }
+// });
+
+
+app.get('/storeData', async (req, res) => {
+    try {
+      // Extract data from query parameters
+      const {
+        temperature,
+        humidity,
+        pressure,
+        altitude,
+        gas,
+        lux,
+        ultraviolet,
+        pm1,
+        pm25,
+        pm10,
+        battery,
+        sound,
+        timestamp,
+      } = req.query;
+  
+      // Check if any of the parameters are missing or invalid
+      if (
+        !temperature ||
+        !humidity ||
+        !pressure ||
+        !altitude ||
+        !gas ||
+        !lux ||
+        !ultraviolet ||
+        !pm1 ||
+        !pm25 ||
+        !pm10 ||
+        !battery ||
+        !sound ||
+        !timestamp
+      ) {
+        return res.status(400).json({ error: 'Invalid sensor data' });
+      }
+  
+      // Insert data into the PostgreSQL database
+      const insertQuery = `
+        INSERT INTO sensor_data (
+          temperature, humidity, pressure, altitude, gas, lux,
+          ultraviolet, pm1, pm25, pm10, battery, sound, timestamp
+        )
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+      `;
+      const values = [
+        temperature,
+        humidity,
+        pressure,
+        altitude,
+        gas,
+        lux,
+        ultraviolet,
+        pm1,
+        pm25,
+        pm10,
+        battery,
+        sound,
+        timestamp,
+      ];
+  
+      await pool.query(insertQuery, values);
+  
+      // You can optionally send the data to another service
+      // Example: Send data to an external URL using Axios
+    //   const externalUrl = 'https://example.com/storeData'; // Replace with the actual URL
+    //   const response = await axios.get(externalUrl, {
+    //     params: req.query, // Send the same query parameters to the external URL
+    //   });
+  
+      res.status(200).json({ message: 'Data stored successfully' });
+    } catch (error) {
+      console.error('Error storing data:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
+
 
 // Handle GET request to retrieve all sensor data
 app.get('/getAllSensorData', async (req, res) => {
