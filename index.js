@@ -91,13 +91,13 @@ app.get('/storeData', async (req, res) => {
         h,
         p,
         l,
-        u,
-        p1,
-        p25,
-        p10,
-        b,
-        s,
-        d,
+        u
+        // p1,
+        // p25,
+        // p10,
+        // b,
+        // s,
+        // d,
       } = req.query;
   
       // Check if any of the parameters are missing or invalid
@@ -106,13 +106,13 @@ app.get('/storeData', async (req, res) => {
         !h ||
         !p ||
         !l ||
-        !u ||
-        !p1 ||
-        !p25 ||
-        !p10 ||
-        !b ||
-        !s ||
-        !d
+        !u
+        //!p1 ||
+        //!p25 ||
+        //!p10 ||
+        //!b ||
+        //!s ||
+        //!d
       ) {
         return res.status(400).json({ error: 'Invalid sensor data' });
       }
@@ -134,12 +134,12 @@ app.get('/storeData', async (req, res) => {
         20,
         l,
         u,
-        p1,
-        p25,
-        p10,
-        b,
-        s,
-        d
+        10,
+        20,
+        30,
+        40,
+        50,
+        80
       ];
   
       await pool.query(insertQuery, values);
