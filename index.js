@@ -87,36 +87,32 @@ app.get('/storeData', async (req, res) => {
     try {
       // Extract data from query parameters
       const {
-        temperature,
-        humidity,
-        pressure,
-        altitude,
-        gas,
-        lux,
-        ultraviolet,
-        pm1,
-        pm25,
-        pm10,
-        battery,
-        sound,
-        timestamp,
+        t,
+        h,
+        p,
+        l,
+        u,
+        p1,
+        p25,
+        p10,
+        b,
+        s,
+        d,
       } = req.query;
   
       // Check if any of the parameters are missing or invalid
       if (
-        !temperature ||
-        !humidity ||
-        !pressure ||
-        !altitude ||
-        !gas ||
-        !lux ||
-        !ultraviolet ||
-        !pm1 ||
-        !pm25 ||
-        !pm10 ||
-        !battery ||
-        !sound ||
-        !timestamp
+        !t ||
+        !h ||
+        !p ||
+        !l ||
+        !u ||
+        !p1 ||
+        !p25 ||
+        !p10 ||
+        !b ||
+        !s ||
+        !d
       ) {
         return res.status(400).json({ error: 'Invalid sensor data' });
       }
@@ -131,19 +127,19 @@ app.get('/storeData', async (req, res) => {
           $7::NUMERIC, $8::NUMERIC, $9::NUMERIC, $10::NUMERIC, $11::NUMERIC, $12::NUMERIC, $13::NUMERIC)
 `;
       const values = [
-        temperature,
-        humidity,
-        pressure,
-        altitude,
-        gas,
-        lux,
-        ultraviolet,
-        pm1,
-        pm25,
-        pm10,
-        battery,
-        sound,
-        timestamp,
+        t,
+        h ,
+        p ,
+        10,
+        20,
+        l,
+        u,
+        p1,
+        p25,
+        p10,
+        b,
+        s,
+        d
       ];
   
       await pool.query(insertQuery, values);
