@@ -5,8 +5,9 @@ const app = express();
 const port = process.env.PORT || 3060; // Define the port for your server
 
 // Middleware to parse JSON data
+app.use(express.json());
 app.use(bodyParser.json());
-
+app.use(bodyParser.urlencoded({ extended: true }));
 // Define a route to handle the JSON data sent from the Arduino GSM module
 app.post('/data', (req, res) => {
   const jsonData = req.body; // JSON data sent in the request body
