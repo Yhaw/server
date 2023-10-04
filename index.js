@@ -19,6 +19,15 @@ app.post('/data', (req, res) => {
   res.status(200).json({ message: 'Data received successfully' });
 });
 
+app.get('/sensor', (req, res) => {
+  const receivedData = req.query; // This will contain the data from the GET request parameters
+
+  // You can use the receivedData object in your application logic if needed
+  // For demonstration purposes, we're sending it back as a JSON response
+  res.json(receivedData);
+  console.log(receivedData)
+});
+
 // Start the Express server
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
