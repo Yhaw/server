@@ -1,31 +1,66 @@
 const express = require('express');
-const bodyParser = require('body-parser');
-
 const app = express();
-const port = process.env.PORT || 3060; // Define the port for your server
+const port = 3060; // You can change the port as needed
+const { Pool } = require('pg');
 
-// Middleware to parse JSON data
-app.use(express.json());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-// Define a route to handle the JSON data sent from the Arduino GSM module
-app.post('/data', (req, res) => {
-  const jsonData = req.body; // JSON data sent in the request body
+// Replace 'YOUR_CONNECTION_STRING' with your actual PostgreSQL connection string
+const connectionString = 'postgres://juldtech:ZJamvr3shwaranxptqsCMGRL99czBiPs@dpg-ciu5a75gkuvoigfd1sj0-a.oregon-postgres.render.com/learnplatform?ssl=true';
 
-  // Handle the JSON data as needed (e.g., store it in a database)
-  console.log('Received JSON data:', jsonData);
-
-  // Send a response back to the Arduino module (optional)
-  res.status(200).json({ message: 'Data received successfully' });
+// Create a connection pool
+const pool = new Pool({
+  connectionString: connectionString,
 });
 
-app.get('/sensor', (req, res) => {
-  const receivedData = req.query; // This will contain the data from the GET request parameters
+// Middleware to allow all forms of access (CORS)
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  next();
+});
 
-  // You can use the receivedData object in your application logic if needed
-  // For demonstration purposes, we're sending it back as a JSON response
-  res.json(receivedData);
-  console.log(receivedData)
+// Define SQL commands
+const dropTableSQL = `DROP TABLE IF EXISTS content;`;
+const createTableSQL = `
+  CREATE TABLE IF NOT EXISTS content (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL
+  );
+`;
+
+// Connect to the database and perform table operations
+pool.connect()
+  .then(client => {
+    return client.query(dropTableSQL)
+      .then(() => client.query(createTableSQL))
+      .then(() => client.release())
+      .catch(error => {
+        console.error('Error creating table:', error);
+        client.release();
+      });
+  })
+  .catch(error => {
+    console.error('Error connecting to PostgreSQL:', error);
+  });
+
+// GET request handler
+app.get('/name', (req, res) => {
+  const { name } = req.query;
+
+  if (!name) {
+    return res.status(400).send('Missing "name" parameter');
+  }
+
+  // Insert the provided name into the "content" table
+  pool.query('INSERT INTO content (name) VALUES ($1) RETURNING id', [name])
+    .then(result => {
+      const lastInsertId = result.rows[0].id;
+      res.send(String(lastInsertId));
+    })
+    .catch(error => {
+      console.error('Error inserting data into PostgreSQL:', error);
+      res.status(500).send('Internal Server Error');
+    });
 });
 
 // Start the Express server
