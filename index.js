@@ -4,7 +4,7 @@ const port = 3060; // You can change the port as needed
 const { Pool } = require('pg');
 
 // Replace 'YOUR_CONNECTION_STRING' with your actual PostgreSQL connection string
-const connectionString = 'postgres://juldtech:ZJamvr3shwaranxptqsCMGRL99czBiPs@dpg-ciu5a75gkuvoigfd1sj0-a.oregon-postgres.render.com/learnplatform?ssl=true';
+const connectionString = 'postgres://admin:8IzN94CbIUYW9H0qL4Zc5dGAaZKvMau6@dpg-ckbdh9pkms5s73bs7jmg-a/crowdsense';
 
 // Create a connection pool
 const pool = new Pool({
